@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>12.0</LangVersion>
+    <AssemblyName>VanillaQuestJournal</AssemblyName>
+    <RootNamespace>VanillaQuestJournal</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GYKGameDir Condition="'$(GYKGameDir)' == '' and '$(GYK_GAME_DIR)' != ''">$(GYK_GAME_DIR)</GYKGameDir>
+    <GYKGameDir Condition="'$(GYKGameDir)' == '' and Exists('$(MSBuildProgramFiles32)\Steam\steamapps\common\Graveyard Keeper\Graveyard Keeper_Data\Managed\Assembly-CSharp.dll')">$(MSBuildProgramFiles32)\Steam\steamapps\common\Graveyard Keeper</GYKGameDir>
+    <GYKGameDir Condition="'$(GYKGameDir)' == '' and Exists('C:\Steam\steamapps\common\Graveyard Keeper\Graveyard Keeper_Data\Managed\Assembly-CSharp.dll')">C:\Steam\steamapps\common\Graveyard Keeper</GYKGameDir>
+    <GYKGameDir Condition="'$(GYKGameDir)' == '' and Exists('C:\Program Files\Steam\steamapps\common\Graveyard Keeper\Graveyard Keeper_Data\Managed\Assembly-CSharp.dll')">C:\Program Files\Steam\steamapps\common\Graveyard Keeper</GYKGameDir>
+    <GYKGameDir Condition="'$(GYKGameDir)' == '' and Exists('D:\SteamLibrary\steamapps\common\Graveyard Keeper\Graveyard Keeper_Data\Managed\Assembly-CSharp.dll')">D:\SteamLibrary\steamapps\common\Graveyard Keeper</GYKGameDir>
+    <GYKGameDir Condition="'$(GYKGameDir)' == '' and Exists('E:\SteamLibrary\steamapps\common\Graveyard Keeper\Graveyard Keeper_Data\Managed\Assembly-CSharp.dll')">E:\SteamLibrary\steamapps\common\Graveyard Keeper</GYKGameDir>
+    <GYKGameDir Condition="'$(GYKGameDir)' == '' and Exists('F:\SteamLibrary\steamapps\common\Graveyard Keeper\Graveyard Keeper_Data\Managed\Assembly-CSharp.dll')">F:\SteamLibrary\steamapps\common\Graveyard Keeper</GYKGameDir>
+    <GYKGameDir Condition="'$(GYKGameDir)' == '' and Exists('G:\SteamLibrary\steamapps\common\Graveyard Keeper\Graveyard Keeper_Data\Managed\Assembly-CSharp.dll')">G:\SteamLibrary\steamapps\common\Graveyard Keeper</GYKGameDir>
+    <GYKGameDir Condition="'$(GYKGameDir)' == '' and Exists('H:\SteamLibrary\steamapps\common\Graveyard Keeper\Graveyard Keeper_Data\Managed\Assembly-CSharp.dll')">H:\SteamLibrary\steamapps\common\Graveyard Keeper</GYKGameDir>
+    <ManagedDir>$(GYKGameDir)\Graveyard Keeper_Data\Managed</ManagedDir>
+    <BepInExCoreDir>$(GYKGameDir)\BepInEx\core</BepInExCoreDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="VanillaQuestJournal.Assets.blue_panel.png" />
+    <EmbeddedResource Include="VanillaQuestJournal.Assets.blue_panel.png" LogicalName="VanillaQuestJournal.Assets.blue_panel.png" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="BepInEx" HintPath="$(BepInExCoreDir)\BepInEx.dll" Private="false" />
+    <Reference Include="0Harmony" HintPath="$(BepInExCoreDir)\0Harmony.dll" Private="false" />
+    <Reference Include="Assembly-CSharp" HintPath="$(ManagedDir)\Assembly-CSharp.dll" Private="false" />
+    <Reference Include="Assembly-CSharp-firstpass" HintPath="$(ManagedDir)\Assembly-CSharp-firstpass.dll" Private="false" />
+    <Reference Include="UnityEngine" HintPath="$(ManagedDir)\UnityEngine.dll" Private="false" />
+    <Reference Include="UnityEngine.CoreModule" HintPath="$(ManagedDir)\UnityEngine.CoreModule.dll" Private="false" />
+    <Reference Include="UnityEngine.IMGUIModule" HintPath="$(ManagedDir)\UnityEngine.IMGUIModule.dll" Private="false" />
+    <Reference Include="UnityEngine.ImageConversionModule" HintPath="$(ManagedDir)\UnityEngine.ImageConversionModule.dll" Private="false" />
+    <Reference Include="UnityEngine.InputLegacyModule" HintPath="$(ManagedDir)\UnityEngine.InputLegacyModule.dll" Private="false" />
+    <Reference Include="UnityEngine.JSONSerializeModule" HintPath="$(ManagedDir)\UnityEngine.JSONSerializeModule.dll" Private="false" />
+    <Reference Include="UnityEngine.TextRenderingModule" HintPath="$(ManagedDir)\UnityEngine.TextRenderingModule.dll" Private="false" />
+  </ItemGroup>
+
+  <Target Name="ValidateGameDirectory" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(GYKGameDir)' == ''" Text="Graveyard Keeper was not found automatically. In PowerShell run: $env:GYK_GAME_DIR='D:\SteamLibrary\steamapps\common\Graveyard Keeper' (replace the path if needed), then run dotnet build -c Release again." />
+    <Error Condition="!Exists('$(ManagedDir)\Assembly-CSharp.dll')" Text="Assembly-CSharp.dll was not found. GYK_GAME_DIR must point to the Graveyard Keeper installation directory." />
+    <Error Condition="!Exists('$(BepInExCoreDir)\BepInEx.dll')" Text="BepInEx.dll was not found. Install BepInEx in the game directory before building." />
+  </Target>
+</Project>
