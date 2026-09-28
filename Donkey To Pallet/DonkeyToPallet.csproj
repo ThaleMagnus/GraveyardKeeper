@@ -7,25 +7,36 @@
     <RootNamespace>DonkeyToPallet</RootNamespace>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <Deterministic>true</Deterministic>
-    <LibDir>$(MSBuildThisFileDirectory)lib\</LibDir>
+    <GameDir Condition="'$(GameDir)' == '' and '$(GRAVEYARD_KEEPER_GAME_DIR)' != ''">$(GRAVEYARD_KEEPER_GAME_DIR)</GameDir>
+    <GameDir Condition="'$(GameDir)' == '' and Exists('C:/Steam/steamapps/common/Graveyard Keeper/Graveyard Keeper_Data/Managed/Assembly-CSharp.dll')">C:/Steam/steamapps/common/Graveyard Keeper</GameDir>
+    <GameDir Condition="'$(GameDir)' == '' and Exists('$(ProgramFiles(x86))/Steam/steamapps/common/Graveyard Keeper/Graveyard Keeper_Data/Managed/Assembly-CSharp.dll')">$(ProgramFiles(x86))/Steam/steamapps/common/Graveyard Keeper</GameDir>
+    <GameDir Condition="'$(GameDir)' == '' and Exists('$(ProgramFiles)/Steam/steamapps/common/Graveyard Keeper/Graveyard Keeper_Data/Managed/Assembly-CSharp.dll')">$(ProgramFiles)/Steam/steamapps/common/Graveyard Keeper</GameDir>
+    <GameManagedDir Condition="'$(GameManagedDir)' == '' and '$(GameDir)' != ''">$(GameDir)/Graveyard Keeper_Data/Managed</GameManagedDir>
+    <BepInExCoreDir Condition="'$(BepInExCoreDir)' == '' and '$(GameDir)' != ''">$(GameDir)/BepInEx/core</BepInExCoreDir>
   </PropertyGroup>
-
   <ItemGroup>
     <Reference Include="BepInEx">
-      <HintPath>$(LibDir)BepInEx.dll</HintPath>
+      <HintPath>$(BepInExCoreDir)/BepInEx.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="0Harmony">
-      <HintPath>$(LibDir)0Harmony.dll</HintPath>
+      <HintPath>$(BepInExCoreDir)/0Harmony.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>$(LibDir)UnityEngine.dll</HintPath>
+      <HintPath>$(GameManagedDir)/UnityEngine.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>$(LibDir)UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>$(GameManagedDir)/UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
+  <Target Name="CheckModBuildReferences" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="'$(GameManagedDir)' == '' or '$(BepInExCoreDir)' == ''" Text="Graveyard Keeper installation not found. Set GameDir to the installed game folder, or set GRAVEYARD_KEEPER_GAME_DIR. Expected Graveyard Keeper_Data/Managed and BepInEx/core beneath it." />
+    <ItemGroup>
+      <MissingModReference Include="@(Reference)" Condition="'%(Reference.HintPath)' != '' and !Exists('%(Reference.HintPath)')" />
+    </ItemGroup>
+    <Error Condition="'@(MissingModReference)' != ''" Text="Missing local game/BepInEx assemblies: @(MissingModReference-&gt;'%(HintPath)', ', '). Install BepInEx in the game directory or pass GameDir, GameManagedDir and BepInExCoreDir to your local installation paths." />
+  </Target>
 </Project>
